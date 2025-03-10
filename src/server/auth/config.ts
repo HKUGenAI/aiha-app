@@ -1,5 +1,8 @@
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import GitHubProvider from "next-auth/providers/github";
+import { MongoDBAdapter } from "@auth/mongodb-adapter"
+import client from "@/server/db"
+import type { Provider } from "next-auth/providers"
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -22,25 +25,25 @@ declare module "next-auth" {
   // }
 }
 
+const providers: Provider[] = [
+  GitHubProvider
+]
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
-  providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-  ],
+  adapter: MongoDBAdapter(client, {databaseName: "aiha"}),
+  providers: providers,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
+    signIn: ({ user }) => {
+      return !!(user.email?.endsWith("@connect.hku.hk") || user.email?.endsWith("@hku.hk") || user.email?.endsWith("@cs.hku.hk"))
+    },
     session: ({ session, token }) => ({
       ...session,
       user: {
@@ -49,4 +52,16 @@ export const authConfig = {
       },
     }),
   },
+
 } satisfies NextAuthConfig;
+
+
+export const providerMap = providers
+  .map((provider) => {
+    if (typeof provider === "function") {
+      const providerData = provider()
+      return { id: providerData.id, name: providerData.name }
+    } else {
+      return { id: provider.id, name: provider.name }
+    }
+  })
