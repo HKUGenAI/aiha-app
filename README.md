@@ -1,5 +1,7 @@
 # AIHA (AI Historian Assistant)
 
+<img width="800" alt="Screenshot 2025-03-10 at 10 39 27 PM" src="https://github.com/user-attachments/assets/efd7b586-0763-4c56-9a8c-797a079cb33f" />
+
 ## Prerequisites
 
 - Node.js 18+ 
