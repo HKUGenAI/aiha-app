@@ -47,3 +47,6 @@ yarn-error.log*
 
 # test files
 /src/app/api/test/**
+
+# vscode
+.vscode
