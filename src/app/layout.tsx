@@ -20,7 +20,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <div className="min-h-screen bg-gray-50 relative">
+        <div className="min-h-screen bg-gray-50 relative flex flex-col justify-between">
           {/* Navigation Bar */}
           <nav className="border-b bg-white shadow-sm">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -78,7 +78,7 @@ export default async function RootLayout({
           </nav>
 
           {/* Main Content */}
-          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 min-h-[90vh]">
+          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             {children}
           </main>
 
