@@ -2,19 +2,19 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col items-center justify-center text-center px-4">
-      <h1 className="text-4xl font-bold mb-4">AIHA</h1>
-      <h2 className="text-2xl mb-6">AI Historian Assistant</h2>
-      
-      <p className="max-w-2xl mb-8 text-gray-600">
-        Helping researchers analyze and understand multimodal historical materials through AI.
-        This site is currently under development.
+    <div className="flex min-h-full flex-col items-center justify-center px-4 py-20 text-center">
+      <h1 className="mb-4 text-4xl font-bold text-foreground">AIHA</h1>
+      <h2 className="mb-6 text-2xl text-foreground">AI Historian Assistant</h2>
+
+      <p className="mb-8 max-w-2xl text-muted-foreground">
+        Helping researchers analyze and understand multimodal historical
+        materials through AI. This site is currently under development.
       </p>
-      
-      <div className="flex flex-col sm:flex-row gap-4 mb-12">
-        <Link 
+
+      <div className="mb-12 flex flex-col gap-4 sm:flex-row">
+        <Link
           href="https://github.com/HKUGenAI/aiha-app"
-          className="rounded-md bg-gray-800 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-700"
+          className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -22,14 +22,20 @@ export default function HomePage() {
         </Link>
         <Link
           href="/projects"
-          className="rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground hover:bg-accent/90"
         >
           View Existing Projects
         </Link>
       </div>
-      
-      <p className="text-sm text-gray-500">
-        Developed by the <a href="mailto:innowing-genai@hku.hk" className="text-blue-600 hover:underline">HKU InnoWing GenAI Team</a>
+
+      <p className="text-sm text-muted-foreground">
+        Developed by the{" "}
+        <a
+          href="mailto:innowing-genai@hku.hk"
+          className="text-primary hover:text-primary/80 hover:underline"
+        >
+          HKU InnoWing GenAI Team
+        </a>
       </p>
     </div>
   );

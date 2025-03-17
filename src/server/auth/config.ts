@@ -1,8 +1,8 @@
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
-import client from "@/server/db"
-import type { Provider } from "next-auth/providers"
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import client from "@/server/db";
+import type { Provider } from "next-auth/providers";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -25,9 +25,7 @@ declare module "next-auth" {
   // }
 }
 
-const providers: Provider[] = [
-  GitHubProvider
-]
+const providers: Provider[] = [GitHubProvider];
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -35,14 +33,18 @@ const providers: Provider[] = [
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig = {
-  adapter: MongoDBAdapter(client, {databaseName: "aiha"}),
+  adapter: MongoDBAdapter(client, { databaseName: "aiha" }),
   providers: providers,
   session: {
     strategy: "jwt",
   },
   callbacks: {
     signIn: ({ user }) => {
-      return !!(user.email?.endsWith("@connect.hku.hk") || user.email?.endsWith("@hku.hk") || user.email?.endsWith("@cs.hku.hk"))
+      return !!(
+        user.email?.endsWith("@connect.hku.hk") ||
+        user.email?.endsWith("@hku.hk") ||
+        user.email?.endsWith("@cs.hku.hk")
+      );
     },
     session: ({ session, token }) => ({
       ...session,
@@ -52,16 +54,13 @@ export const authConfig = {
       },
     }),
   },
-
 } satisfies NextAuthConfig;
 
-
-export const providerMap = providers
-  .map((provider) => {
-    if (typeof provider === "function") {
-      const providerData = provider()
-      return { id: providerData.id, name: providerData.name }
-    } else {
-      return { id: provider.id, name: provider.name }
-    }
-  })
+export const providerMap = providers.map((provider) => {
+  if (typeof provider === "function") {
+    const providerData = provider();
+    return { id: providerData.id, name: providerData.name };
+  } else {
+    return { id: provider.id, name: provider.name };
+  }
+});

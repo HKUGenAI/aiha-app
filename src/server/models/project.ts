@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export interface IProject extends mongoose.Document {
   _id: mongoose.Types.ObjectId;
@@ -13,33 +13,35 @@ export interface IProject extends mongoose.Document {
 }
 
 const projectSchema = new mongoose.Schema<IProject>({
-  projectName: { 
-    type: String, 
-    required: true 
+  projectName: {
+    type: String,
+    required: true,
   },
   description: String,
-  ownerId: { 
-    type: String, 
-    required: true 
+  ownerId: {
+    type: String,
+    required: true,
   },
   ownerName: {
     type: String,
-    required: true
+    required: true,
   },
-  isPublic: { 
-    type: Boolean, 
-    default: false 
+  isPublic: {
+    type: Boolean,
+    default: false,
   },
   collaborators: [String],
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  updatedAt: { 
-    type: Date, 
-    default: Date.now 
-  }
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 // Prevent duplicate model initialization
-export const Project = (mongoose.models.Project as mongoose.Model<IProject>) || mongoose.model('Project', projectSchema);
+export const Project =
+  (mongoose.models.Project as mongoose.Model<IProject>) ||
+  mongoose.model("Project", projectSchema);

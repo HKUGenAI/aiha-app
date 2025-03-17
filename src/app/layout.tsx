@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import NavLinks from "@/components/nav-links";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
@@ -18,29 +19,30 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html
+      lang="en"
+      className={`${GeistSans.variable}`}
+      suppressHydrationWarning
+    >
       <body>
-        <div className="min-h-screen bg-gray-50 relative flex flex-col justify-between">
+        <div className="relative min-h-screen bg-background">
           {/* Navigation Bar */}
-          <nav className="border-b bg-white shadow-sm">
+          <nav className="h-16 border-b bg-card shadow-sm">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="flex h-16 justify-between">
-                <div className="flex">
+                <div className="flex items-center">
                   {/* Logo/Home Link */}
                   <div className="flex flex-shrink-0 items-center">
-                    <Link href="/" className="text-xl font-bold">
+                    <Link
+                      href="/"
+                      className="text-xl font-bold text-foreground"
+                    >
                       AIHA
                     </Link>
                   </div>
                   {/* Main Navigation Links */}
-                  <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    <Link
-                      href="/projects"
-                      className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                    >
-                      Projects
-                    </Link>
-                    {/* Add more navigation links as needed */}
+                  <div className="hidden sm:ml-3 sm:flex">
+                    <NavLinks />
                   </div>
                 </div>
 
@@ -49,17 +51,18 @@ export default async function RootLayout({
                   {session ? (
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-foreground">
                           {session.user?.name}
                         </span>
                         <img
                           src={session.user?.image!}
                           className="h-8 w-8 rounded-full"
+                          alt="Profile"
                         />
                       </div>
                       <Link
                         href="/api/auth/signout"
-                        className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                        className="rounded-md bg-secondary/50 px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary/70"
                       >
                         Sign Out
                       </Link>
@@ -67,7 +70,7 @@ export default async function RootLayout({
                   ) : (
                     <Link
                       href="/api/auth/signin"
-                      className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                      className="rounded-md bg-secondary/50 px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary/70"
                     >
                       Sign In
                     </Link>
@@ -78,14 +81,14 @@ export default async function RootLayout({
           </nav>
 
           {/* Main Content */}
-          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <main className="relative mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl flex-grow justify-center px-4 py-6 sm:px-6 lg:px-8">
             {children}
           </main>
 
           {/* Footer */}
-          <footer className="border-t bg-white">
-            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-              <p className="text-center text-sm text-gray-500">
+          <footer className="h-16 border-t bg-card">
+            <div className="mx-auto h-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+              <p className="text-center text-sm text-muted-foreground">
                 © {new Date().getFullYear()} AIHA. All rights reserved.
               </p>
             </div>
