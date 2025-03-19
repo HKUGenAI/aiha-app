@@ -41,8 +41,8 @@ export const authConfig = {
   callbacks: {
     signIn: ({ user }) => {
       return !!(
-        user.email?.endsWith("@connect.hku.hk") ||
-        user.email?.endsWith("@hku.hk") ||
+        user.email?.endsWith("@connect.hku.hk") ??
+        user.email?.endsWith("@hku.hk") ??
         user.email?.endsWith("@cs.hku.hk")
       );
     },

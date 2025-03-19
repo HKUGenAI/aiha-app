@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { types } from "node:util";
 
 export interface IProject extends mongoose.Document {
   _id: mongoose.Types.ObjectId;

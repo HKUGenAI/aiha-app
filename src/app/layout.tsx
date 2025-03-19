@@ -49,14 +49,14 @@ export default async function RootLayout({
 
                 {/* User Menu */}
                 <div className="flex items-center">
-                  {session ? (
+                  {session && session.user ? (
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
                         <span className="text-sm text-foreground">
-                          {session.user?.name}
+                          {session.user.name}
                         </span>
                         <img
-                          src={session.user?.image!}
+                          src={session.user.image ?? ""}
                           className="h-8 w-8 rounded-full"
                           alt="Profile"
                         />

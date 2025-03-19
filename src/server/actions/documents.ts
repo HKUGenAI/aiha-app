@@ -1,14 +1,14 @@
 "use server";
 
 import { mongoosePromise } from "@/server/db";
-import { Project, Document } from "@/server/models/project";
-import { Chunk, ChunkType } from "@/server/models/chunk";
+import { Project, type Document } from "@/server/models/project";
+import { Chunk, type ChunkType } from "@/server/models/chunk";
 import { auth } from "@/server/auth";
 
 export async function addDocumentToProject(
   projectId: string,
   document: Document,
-): Promise<Boolean> {
+): Promise<boolean> {
   await mongoosePromise;
   const session = await auth();
 
@@ -46,7 +46,7 @@ export async function addChunksToProject(
   projectId: string,
   documentId: string,
   chunkDocuments: ChunkType[],
-): Promise<Boolean> {
+): Promise<boolean> {
   await mongoosePromise;
   const session = await auth();
 

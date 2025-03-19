@@ -13,7 +13,7 @@ export interface ChunkType {
         to: number;
       };
     };
-    [key: string]: any;
+    [key: string]: unknown;
   };
   embedding: number[];
   createdAt?: Date;
@@ -33,7 +33,7 @@ export interface IChunk extends mongoose.Document {
         to: number;
       };
     };
-    [key: string]: any;
+    [key: string]: unknown;
   };
   embedding: number[];
   createdAt?: Date;

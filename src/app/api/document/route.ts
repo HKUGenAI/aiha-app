@@ -7,7 +7,7 @@ import {
 } from "@/server/actions/documents";
 import {
   type Document as DBDocumentType,
-  DocumentTypes,
+  type DocumentTypes,
 } from "@/server/models/project";
 import { v4 as uuidv4 } from "uuid";
 
@@ -24,10 +24,19 @@ const encoding = new Tiktoken(o200k_base);
 // Reuse the same instance in the length function
 const lengthFunction = (text: string) => encoding.encode(text).length;
 
+interface DocumentRequest {
+  containerName: string;
+  imagesDir: string;
+  mdDocUrl: string;
+  projectId: string;
+  docName: string;
+  docType: DocumentTypes;
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const { containerName, imagesDir, mdDocUrl, projectId, docName, docType } =
-      await request.json();
+      (await request.json()) as DocumentRequest;
 
     if (!containerName) {
       throw new Error("Missing containerName");
@@ -50,9 +59,9 @@ export async function PUT(request: NextRequest) {
     if (!docType) {
       throw new Error("Missing docType");
     }
-    if (!Object.values(DocumentTypes).includes(docType as DocumentTypes)) {
-      throw new Error("Missing docType");
-    }
+    // if (!Object.values(DocumentTypes).includes(docType as DocumentTypes)) {
+    //   throw new Error("Missing docType");
+    // }
 
     // console.log('Fetching MD...');
 
@@ -72,15 +81,16 @@ export async function PUT(request: NextRequest) {
     await moveBlobs(sourceContainerName, imagesDir, destinationContainerName);
 
     const imageRegex = /!\[.*?\]\((.*?)\)/g;
-    const images = mdContent.match(imageRegex);
-    if (images) {
-      images.forEach((image) => {
-        const imageUrl = image.match(/\((.*?)\)/)?.[1];
-        if (imageUrl) {
-          const newImageUrl = imageUrl.replace(imagesDir, "${BASE_URL}");
-          mdContent = mdContent.replace(imageUrl, newImageUrl);
-        }
-      });
+    let match;
+    while ((match = imageRegex.exec(mdContent)) !== null) {
+      const fullMatch = match[0];
+      const urlRegex = /\((.*?)\)/;
+      const urlMatch = urlRegex.exec(fullMatch);
+      const imageUrl = urlMatch?.[1];
+      if (imageUrl) {
+        const newImageUrl = imageUrl.replace(imagesDir, "${BASE_URL}");
+        mdContent = mdContent.replace(imageUrl, newImageUrl);
+      }
     }
 
     // Split the MD content into chunks

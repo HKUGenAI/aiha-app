@@ -9,7 +9,7 @@ export default async function ProjectChatPage({
   params: { projectId: string };
 }) {
   const session = await auth();
-  const { projectId } = await params;
+  const { projectId } = params;
   const project = await getProjectById(projectId);
 
   if (!project) {

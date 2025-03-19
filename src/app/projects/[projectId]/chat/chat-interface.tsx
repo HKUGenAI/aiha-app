@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
-import { IProject } from "@/server/models/project";
+import { type IProject } from "@/server/models/project";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/markdown";
 
 export default function ChatInterface({ project }: { project: IProject }) {
-  const [prompt, setPrompt] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    api: `/api/chat/${project._id}`,
+    api: `/api/chat/${project._id.toString()}`,
     initialMessages: [
       {
         id: "welcome",
@@ -36,7 +35,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
           </h1>
         </div>
         <Link
-          href={`/projects/${project._id}`}
+          href={`/projects/${project._id.toString()}`}
           className="rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted/80"
         >
           Back to Project
@@ -57,7 +56,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
                 {message.role === "user" ? (
                   <p className="text-foreground">{message.content}</p>
                 ) : (
-                  <Markdown children={message.content} />
+                  <Markdown>{message.content}</Markdown>
                 )}
               </div>
             </div>

@@ -93,7 +93,7 @@ const components: Partial<Components> = {
   hr: ({ node, children, ...props }) => {
     return <hr className="my-4" {...props} />;
   },
-  img: ({ node, children, ...props }) => {
+  img: ({ node, ...props }) => {
     return <img className="max-h-[35rem] max-w-[40rem]" {...props} />;
   },
 };

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { IProject } from "@/server/models/project";
-import { Session } from "next-auth";
+import { type IProject } from "@/server/models/project";
+import { type Session } from "next-auth";
 import { useState } from "react";
 import { updateProject } from "@/server/actions/projects";
 import { useRouter } from "next/navigation";
@@ -152,7 +152,7 @@ export default function ProjectInfo({
         )}
         <div className="flex gap-4">
           <Link
-            href={`/projects/${project._id}/chat`}
+            href={`/projects/${project._id.toString()}/chat`}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Chat with Project
@@ -314,7 +314,7 @@ export default function ProjectInfo({
 
             {isOwner && (
               <Link
-                href={`/projects/${project._id}/invite`}
+                href={`/projects/${project._id.toString()}/invite`}
                 className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800"
               >
                 + Invite collaborators
@@ -331,7 +331,7 @@ export default function ProjectInfo({
             </h2>
             {(isOwner || isCollaborator) && (
               <Link
-                href={`/projects/${project._id}/documents/new`}
+                href={`/projects/${project._id.toString()}/documents/new`}
                 className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
               >
                 Add Document
@@ -343,13 +343,13 @@ export default function ProjectInfo({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {project.documents.map((doc) => (
                 <Link
-                  href={`/projects/${project._id}/documents/${doc.documentId}`}
+                  href={`/projects/${project._id.toString()}/documents/${doc.documentId}`}
                   key={doc.documentId}
                   className="flex overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md"
                 >
                   <div className="h-24 w-24 flex-shrink-0">
                     <img
-                      src={doc.documentThumbnail}
+                      src={doc.documentThumbnail ?? ""}
                       alt={doc.documentTitle}
                       className="h-full w-full object-cover"
                     />

@@ -1,12 +1,12 @@
 "use server";
 
 import { mongoosePromise } from "@/server/db";
-import { Project, IProject } from "@/server/models/project";
+import { Project, type IProject } from "@/server/models/project";
 import { auth } from "@/server/auth";
 
 export async function userHasAccessToProject(
   projectId: string,
-): Promise<Boolean> {
+): Promise<boolean> {
   await mongoosePromise;
   const session = await auth();
   return Project.findById(projectId).then((project) => {
@@ -46,7 +46,7 @@ export async function getProjectById(id: string): Promise<IProject | null> {
           (project.ownerId === session.user.id ||
             project.collaborators.includes(session.user.id))))
     ) {
-      return JSON.parse(JSON.stringify(project));
+      return JSON.parse(JSON.stringify(project)) as IProject;
     }
 
     return null;
@@ -63,7 +63,7 @@ export async function getProjectName(projectId: string) {
   try {
     const { getProjectById } = await import("@/server/actions/projects");
     const project = await getProjectById(projectId);
-    return project?.projectName || "Project";
+    return project?.projectName ?? "Project";
   } catch (error) {
     console.error("Error fetching project name:", error);
     return "Project";
@@ -77,7 +77,7 @@ export async function updateProject(
     description?: string;
     isPublic?: boolean;
   },
-): Promise<Boolean> {
+): Promise<boolean> {
   await mongoosePromise;
   const session = await auth();
 
@@ -129,7 +129,7 @@ export async function createProject(data: {
   projectName: string;
   description: string;
   isPublic?: boolean;
-}): Promise<Boolean> {
+}): Promise<boolean> {
   await mongoosePromise;
   const session = await auth();
 

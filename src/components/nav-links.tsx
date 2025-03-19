@@ -10,7 +10,8 @@ export default function NavLinks() {
   const pathname = usePathname();
 
   // Check if we're on a project page
-  const projectMatch = pathname.match(/^\/projects\/([^\/]+)/);
+  const projectRegex = /^\/projects\/([^\/]+)/;
+  const projectMatch = projectRegex.exec(pathname);
   const projectId =
     projectMatch && projectMatch[1] !== "new" ? projectMatch[1] : null;
 
@@ -64,7 +65,7 @@ function ProjectName({ projectId }: { projectId: string }) {
       }
     }
 
-    fetchProjectName();
+    void fetchProjectName();
   }, [projectId]);
 
   return <>{projectName}</>;

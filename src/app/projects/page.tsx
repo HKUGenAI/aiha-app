@@ -1,8 +1,7 @@
 import { auth } from "@/server/auth";
 import { getMyProjects, getPublicProjects } from "@/server/actions/projects";
-import { IProject } from "@/server/models/project";
+import { type IProject } from "@/server/models/project";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 export default async function ProjectPage() {
   const session = await auth();
@@ -45,7 +44,7 @@ export default async function ProjectPage() {
         ) : !myProjects || myProjects?.length === 0 ? (
           <div className="rounded-lg border border-border bg-card p-6">
             <p className="text-muted-foreground">
-              You haven't created any projects yet.
+              You haven&apos;t created any projects yet.
             </p>
             <Link
               href="/projects/new"
@@ -90,7 +89,7 @@ function ProjectList({
       {projects.map((project) => (
         <Link
           key={project._id.toString()}
-          href={`/projects/${project._id}`}
+          href={`/projects/${project._id.toString()}`}
           className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm transition-shadow hover:shadow-md"
         >
           <h3 className="text-lg font-medium text-foreground">

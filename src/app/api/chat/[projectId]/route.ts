@@ -1,9 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { UIMessage, streamText } from "ai";
+import { type NextRequest, NextResponse } from "next/server";
+import { type UIMessage, streamText } from "ai";
 import { azure } from "@ai-sdk/azure";
 import { auth } from "@/server/auth";
 import { getProjectById } from "@/server/actions/projects";
-import { searchChunks } from "@/server/actions/search";
+import {
+  searchChunks,
+  type SearchChunkResponse,
+} from "@/server/actions/search";
 import { mongoosePromise } from "@/server/db";
 import { systemPrompt } from "./system-prompt";
 
@@ -15,7 +18,7 @@ export async function POST(
 ) {
   try {
     await mongoosePromise;
-    const { projectId } = await params;
+    const { projectId } = params;
     const session = await auth();
 
     // Check if user has access to this project
@@ -28,13 +31,13 @@ export async function POST(
       !project.isPublic &&
       !session?.user?.id &&
       project.ownerId !== session?.user?.id &&
-      !project.collaborators.includes(session?.user?.id || "")
+      !project.collaborators.includes(session?.user?.id ?? "")
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get the messages from the request
-    const { messages }: { messages: UIMessage[] } = await req.json();
+    const { messages } = (await req.json()) as { messages: UIMessage[] };
     const lastMessage = messages[messages.length - 1];
 
     // Check if lastMessage exists
@@ -58,10 +61,10 @@ export async function POST(
     const chunks = await searchChunks(projectId, userQuery, TOP_K);
     console.log("Chunks retrieved");
 
-    const context = chunks
-      .map((chunk) => chunk.content)
+    const context: string = chunks
+      .map((chunk: SearchChunkResponse) => chunk.content)
       .join("\n\n")
-      .replace("${BASE_URL}", process.env.IMAGES_BASE_URL || "");
+      .replace("${BASE_URL}", process.env.IMAGES_BASE_URL ?? "");
 
     const result = streamText({
       model: azure("gpt-4o-mini"),

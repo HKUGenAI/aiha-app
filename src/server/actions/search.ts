@@ -6,14 +6,32 @@ import { userHasAccessToProject } from "./projects";
 
 import { embed } from "ai";
 import { azure } from "@ai-sdk/azure";
+import type mongoose from "mongoose";
+
+export interface SearchChunkResponse {
+  content: string;
+  metadata: {
+    documentId: string;
+    projectId: string;
+    loc?: {
+      lines?: {
+        from: number;
+        to: number;
+      };
+    };
+    [key: string]: unknown;
+  };
+  score: number;
+}
 
 export async function searchChunks(
   projectId: string,
   query: string,
   topK: number,
-) {
+): Promise<SearchChunkResponse[]> {
   await mongoosePromise;
-  if (!userHasAccessToProject(projectId)) {
+  const verified = await userHasAccessToProject(projectId);
+  if (!verified) {
     throw new Error("Unauthorized");
   }
   if (!projectId) {
@@ -50,5 +68,5 @@ export async function searchChunks(
     },
   ];
 
-  return await Chunk.aggregate(agg as any[]);
+  return await Chunk.aggregate(agg as mongoose.PipelineStage[]);
 }
