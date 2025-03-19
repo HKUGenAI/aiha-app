@@ -14,6 +14,11 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    MONGODB_URI: z.string(),
+    AUTH_GITHUB_ID: z.string(),
+    AUTH_GITHUB_SECRET: z.string(),
+    IMAGES_BASE_URL: z.string().url().optional(),
+    HTTP_PROXY: z.string().optional(),
   },
 
   /**
@@ -32,6 +37,11 @@ export const env = createEnv({
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
     NODE_ENV: process.env.NODE_ENV,
+    MONGODB_URI: process.env.MONGODB_URI,
+    AUTH_GITHUB_ID: process.env.AUTH_GITHUB_ID,
+    AUTH_GITHUB_SECRET: process.env.AUTH_GITHUB_SECRET,
+    IMAGES_BASE_URL: process.env.IMAGES_BASE_URL,
+    HTTP_PROXY: process.env.HTTP_PROXY,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

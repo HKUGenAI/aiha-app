@@ -4,6 +4,24 @@ import { mongoosePromise } from "@/server/db";
 import { Project, IProject } from "@/server/models/project";
 import { auth } from "@/server/auth";
 
+export async function userHasAccessToProject(
+  projectId: string,
+): Promise<Boolean> {
+  await mongoosePromise;
+  const session = await auth();
+  return Project.findById(projectId).then((project) => {
+    if (!project) {
+      return false;
+    }
+    return Boolean(
+      project.isPublic ||
+        (session?.user?.id &&
+          (project.ownerId === session.user.id ||
+            project.collaborators.includes(session.user.id))),
+    );
+  });
+}
+
 export async function getMyProjects(userId: string): Promise<IProject[]> {
   await mongoosePromise;
   return Project.find({ ownerId: userId }).sort({ updatedAt: -1 });

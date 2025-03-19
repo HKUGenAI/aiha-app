@@ -152,6 +152,12 @@ export default function ProjectInfo({
         )}
         <div className="flex gap-4">
           <Link
+            href={`/projects/${project._id}/chat`}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Chat with Project
+          </Link>
+          <Link
             href="/projects"
             className="rounded-md bg-muted px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted/80"
           >
@@ -333,30 +339,30 @@ export default function ProjectInfo({
             )}
           </div>
 
-          {documents.length > 0 ? (
+          {project.documents.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {documents.map((doc) => (
+              {project.documents.map((doc) => (
                 <Link
-                  href={`/projects/${project._id}/documents/${doc.id}`}
-                  key={doc.id}
+                  href={`/projects/${project._id}/documents/${doc.documentId}`}
+                  key={doc.documentId}
                   className="flex overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md"
                 >
                   <div className="h-24 w-24 flex-shrink-0">
                     <img
-                      src={doc.thumbnail}
-                      alt={doc.title}
+                      src={doc.documentThumbnail}
+                      alt={doc.documentTitle}
                       className="h-full w-full object-cover"
                     />
                   </div>
                   <div className="flex-grow p-3">
                     <h3 className="font-medium text-card-foreground">
-                      {doc.title}
+                      {doc.documentTitle}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                      {doc.description}
+                      {doc.documentType}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground/70">
-                      Updated {doc.updatedAt.toLocaleDateString()}
+                      Updated {new Date(doc.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </Link>
@@ -372,31 +378,3 @@ export default function ProjectInfo({
     </div>
   );
 }
-
-// Hardcoded documents for now
-const documents = [
-  {
-    id: "1",
-    title: "Document 1",
-    thumbnail: "https://picsum.photos/128",
-    description: "This is document 1.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "2",
-    title: "Document 2",
-    thumbnail: "https://picsum.photos/128",
-    description: "This is document 2.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "3",
-    title: "Document 3",
-    thumbnail: "https://picsum.photos/128",
-    description: "This is document 3.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];

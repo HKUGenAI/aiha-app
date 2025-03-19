@@ -6,6 +6,7 @@ import { type Metadata } from "next";
 
 import Link from "next/link";
 import { auth } from "@/server/auth";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "AIHA",
@@ -86,14 +87,15 @@ export default async function RootLayout({
           </main>
 
           {/* Footer */}
-          <footer className="h-16 border-t bg-card">
+          {/* <footer className="h-16 border-t bg-card">
             <div className="mx-auto h-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
               <p className="text-center text-sm text-muted-foreground">
                 © {new Date().getFullYear()} AIHA. All rights reserved.
               </p>
             </div>
-          </footer>
+          </footer> */}
         </div>
+        <Toaster />
       </body>
     </html>
   );

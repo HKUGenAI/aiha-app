@@ -33,9 +33,18 @@ Fill in the following variables in `.env`:
 - `AUTH_GITHUB_ID` - Your GitHub Client ID
 - `AUTH_GITHUB_SECRET` - Your GitHub Client Secret
 - `MONGODB_URI` - Your MongoDB connection string
+- `AZURE_STORAGE_CONNECTION_STRING` - Your Azure Blob Storage Connection String
+- `IMAGES_BASE_URL` - Your Image Directory Azure Blob Storage URL
+- `AZURE_RESOURCE_NAME` - Your Azure OpenAI Resource Name
+- `AZURE_API_KEY` - Your Azure OpenAI API Key
 - Other auth provider credentials as needed
 
-4. Run the development server
+4. Set up Atlas Vector Search Index
+```bash
+node create-vector-index.js
+```
+
+5. Run the development server
 ```bash
 pnpm dev
 ```
@@ -43,6 +52,10 @@ pnpm dev
 The app will be available at [http://localhost:3000](http://localhost:3000)
 
 ## Development Workflow
+
+### Maintainer Notes
+- Use pnpm for package management
+- Use `pnpm format:check` and `pnpm format:write` to check and apply formatting before committing
 
 ### Database Schema
 

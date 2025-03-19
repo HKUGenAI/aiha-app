@@ -11,7 +11,8 @@ export default function NavLinks() {
 
   // Check if we're on a project page
   const projectMatch = pathname.match(/^\/projects\/([^\/]+)/);
-  const projectId = projectMatch && projectMatch[1] !== "new" ? projectMatch[1] : null;
+  const projectId =
+    projectMatch && projectMatch[1] !== "new" ? projectMatch[1] : null;
 
   return (
     <div className="flex items-center space-x-2">
