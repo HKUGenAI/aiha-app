@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { MongoClient } from "mongodb";
 import { config } from "dotenv";
 
@@ -52,6 +53,7 @@ async function indexVectorStore() {
       const cursor = collection.listSearchIndexes();
       for await (const index of cursor) {
         if (index.name === result) {
+
           if (index.queryable) {
             console.log(`${result} is ready for querying.`);
             isQueryable = true;

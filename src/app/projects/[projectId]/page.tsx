@@ -6,10 +6,10 @@ import ProjectInfo from "./project-info";
 export default async function ProjectDetailsPage({
   params,
 }: {
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
   const session = await auth();
-  const { projectId } = params;
+  const { projectId } = await params;
   const project = await getProjectById(projectId);
 
   if (!project) {

@@ -11,7 +11,6 @@ export default function ChatInterface({ project }: { project: IProject }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    api: `/api/chat/${project._id.toString()}`,
     initialMessages: [
       {
         id: "welcome",
@@ -19,6 +18,9 @@ export default function ChatInterface({ project }: { project: IProject }) {
         content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
       },
     ],
+    body: {
+      projectId: project._id.toString(),
+    },
   });
 
   // Auto-scroll to bottom when messages change

@@ -13,12 +13,11 @@ import { systemPrompt } from "./system-prompt";
 const TOP_K = 6;
 
 export async function POST(
-  req: NextRequest,
-  { params }: { params: { projectId: string } },
+  req: NextRequest
 ) {
   try {
     await mongoosePromise;
-    const { projectId } = params;
+    const { messages, projectId } = (await req.json()) as { messages: UIMessage[], projectId: string };
     const session = await auth();
 
     // Check if user has access to this project
@@ -37,7 +36,6 @@ export async function POST(
     }
 
     // Get the messages from the request
-    const { messages } = (await req.json()) as { messages: UIMessage[] };
     const lastMessage = messages[messages.length - 1];
 
     // Check if lastMessage exists
@@ -61,7 +59,7 @@ export async function POST(
     const chunks = await searchChunks(projectId, userQuery, TOP_K);
     console.log("Chunks retrieved");
 
-    const context: string = chunks
+    const contextString: string = chunks
       .map((chunk: SearchChunkResponse) => chunk.content)
       .join("\n\n")
       .replace("${BASE_URL}", process.env.IMAGES_BASE_URL ?? "");
@@ -70,7 +68,7 @@ export async function POST(
       model: azure("gpt-4o-mini"),
       system: systemPrompt
         .replace("{{projectName}}", project.projectName)
-        .replace("{{context}}", context),
+        .replace("{{context}}", contextString),
       messages,
     });
 
