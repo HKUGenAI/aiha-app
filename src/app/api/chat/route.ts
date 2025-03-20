@@ -9,8 +9,15 @@ import {
 } from "@/server/actions/search";
 import { mongoosePromise } from "@/server/db";
 import { systemPrompt } from "./system-prompt";
+import { ProxyAgent, setGlobalDispatcher } from "undici";
 
 const TOP_K = 6;
+
+// Only set up proxy if HTTP_PROXY is defined and we're not in a test environment
+if (process.env.HTTP_PROXY && process.env.NODE_ENV !== 'test') {
+  const proxyAgent = new ProxyAgent(process.env.HTTP_PROXY);
+  setGlobalDispatcher(proxyAgent);
+}
 
 export async function POST(
   req: NextRequest
