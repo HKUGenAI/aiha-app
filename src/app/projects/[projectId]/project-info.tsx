@@ -292,6 +292,14 @@ export default function ProjectInfo({
               {new Date(project.updatedAt).toLocaleString()}
             </p>
           </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Documents
+            </h3>
+            <p className="text-card-foreground">
+              {project.documents?.length || 0} document(s)
+            </p>
+          </div>
         </div>
 
         {/* Collaborators Section */}
@@ -322,58 +330,6 @@ export default function ProjectInfo({
             )}
           </div>
         )}
-
-        {/* Documents Section */}
-        <div className="mt-6 border-t border-border pt-4">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-medium text-card-foreground">
-              Documents
-            </h2>
-            {(isOwner || isCollaborator) && (
-              <Link
-                href={`/projects/${project._id.toString()}/documents/new`}
-                className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                Add Document
-              </Link>
-            )}
-          </div>
-
-          {project.documents.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {project.documents.map((doc) => (
-                <Link
-                  href={`/projects/${project._id.toString()}/documents/${doc.documentId}`}
-                  key={doc.documentId}
-                  className="flex overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md"
-                >
-                  <div className="h-24 w-24 flex-shrink-0">
-                    <img
-                      src={doc.documentThumbnail ?? ""}
-                      alt={doc.documentTitle}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-grow p-3">
-                    <h3 className="font-medium text-card-foreground">
-                      {doc.documentTitle}
-                    </h3>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                      {doc.documentType}
-                    </p>
-                    <p className="mt-2 text-xs text-muted-foreground/70">
-                      Updated {new Date(doc.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">
-              No documents in this project yet.
-            </p>
-          )}
-        </div>
       </div>
     </div>
   );
