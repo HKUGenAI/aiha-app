@@ -8,188 +8,47 @@ import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/markdown";
 import { PlusCircle } from "lucide-react";
 import { set } from "mongoose";
-
-// Define the structure of a chat session
-interface ChatSession {
-  id: string;
-  title: string;
-  lastUpdated: number;
-  messageCount: number;
-}
+import SessionSideBar from "./SessionSideBar";
+import { useSessionManager } from "@/hooks/useSessionManager";
 
 export default function ChatInterface({ project }: { project: IProject }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const projectId = project._id.toString();
+  const sessionManager = useSessionManager(projectId);
 
-  // Track current active chat session
-  const [currentSessionId, setCurrentSessionId] = useState<string>("default");
-  // Store all available chat sessions
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
-
-  // Get stored messages and sessions from localStorage
-  useEffect(() => {
-    console.log(`useEffect[Loading Sessions & Chatting History]`);
-    try {
-      // Load sessions
-      const storedSessions = localStorage.getItem(`chat-sessions-${projectId}`);
-      if (storedSessions) {
-        const parsedSessions = JSON.parse(storedSessions) as ChatSession[];
-        if (parsedSessions && parsedSessions.length > 0) {
-          setChatSessions(parsedSessions);
-          // Set the most recently updated session as the current one
-          const mostRecentSession = [...parsedSessions].sort(
-            (a, b) => b.lastUpdated - a.lastUpdated,
-          )[0];
-          setCurrentSessionId(mostRecentSession!.id);
-        }
-      }
-
-      if (!storedSessions || storedSessions.length === 0 || !currentSessionId) {
-        setCurrentSessionId("default");
-        setChatSessions([
+  const initialMessages =
+    sessionManager.storedMessages.length > 0
+      ? sessionManager.storedMessages
+      : ([
           {
-            id: "default",
-            title: "Default Chat",
-            lastUpdated: Date.now(),
-            messageCount: 0,
+            id: "welcome",
+            role: "assistant",
+            content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
           },
-        ]);
-      }
-
-      // Load messages for current session
-      const storedMessages = localStorage.getItem(
-        `chat-${projectId}-${currentSessionId}`,
-      );
-      if (storedMessages) {
-        const parsedMessages: Message[] = JSON.parse(
-          storedMessages,
-        ) as Message[];
-        if (parsedMessages && parsedMessages.length > 0) {
-          setStoredMessages(parsedMessages);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load stored sessions or messages:", error);
-    }
-  }, [projectId]);
-
-  // Initial welcome message as default
-  const [storedMessages, setStoredMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
-    },
-  ]);
+        ] as Message[]);
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    initialMessages: storedMessages,
+    initialMessages: initialMessages,
     body: {
       projectId: projectId,
     },
-    id: `chat-${projectId}-${currentSessionId}`,
+    id: `chat-${projectId}-${sessionManager.currentSessionId}`,
   });
 
-  // Save messages to localStorage
   useEffect(() => {
-    if (messages.length > 0) {
-      // Save messages to localStorage
-      localStorage.setItem(
-        `chat-${projectId}-${currentSessionId}`,
-        JSON.stringify(messages),
-      );
-
-      // Update chat sessions using functional update pattern
-      setChatSessions((prevSessions) => {
-        const updatedSessions = prevSessions.map((session) =>
-          session.id === currentSessionId
-            ? {
-                ...session,
-                lastUpdated: Date.now(),
-                messageCount: messages.length,
-              }
-            : session,
-        );
-
-        // Save updated sessions to localStorage
-        localStorage.setItem(
-          `chat-sessions-${projectId}`,
-          JSON.stringify(updatedSessions),
-        );
-
-        return updatedSessions;
-      });
-    }
+    sessionManager.updateSession(messages);
   }, [messages]);
-
-  // Create a new chat session
-  const createNewSession = () => {
-    const newSessionId = `session-${Date.now()}`;
-    const newSession = {
-      id: newSessionId,
-      title: `Chat ${chatSessions.length + 1}`,
-      lastUpdated: Date.now(),
-      messageCount: 1,
-    };
-
-    const updatedSessions = [...chatSessions, newSession];
-    setChatSessions(updatedSessions);
-    localStorage.setItem(
-      `chat-sessions-${projectId}`,
-      JSON.stringify(updatedSessions),
-    );
-
-    // Switch to the new session
-    setCurrentSessionId(newSessionId);
-
-    // Reset stored messages to default welcome message
-    setStoredMessages([
-      {
-        id: "welcome",
-        role: "assistant",
-        content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
-      },
-    ]);
-  };
 
   return (
     <div className="flex h-[calc(100vh-4rem)]">
       {/* Chat Sessions Sidebar */}
-      <div className="flex w-64 flex-col border-r border-border bg-muted/30">
-        <div className="border-b border-border p-4">
-          <button
-            onClick={createNewSession}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            <PlusCircle className="h-4 w-4" />
-            New Chat
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto">
-          {chatSessions.length > 0 ? (
-            chatSessions.map((session) => (
-              <button
-                key={session.id}
-                onClick={() => setCurrentSessionId(session.id)}
-                className={cn(
-                  "w-full border-b border-border/50 px-4 py-3 text-left transition-colors hover:bg-muted",
-                  currentSessionId === session.id && "bg-muted",
-                )}
-              >
-                <div className="truncate font-medium">{session.title}</div>
-                <div className="text-xs text-muted-foreground">
-                  {new Date(session.lastUpdated).toLocaleDateString()} ·{" "}
-                  {session.messageCount} messages
-                </div>
-              </button>
-            ))
-          ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              Loading Sessions...
-            </div>
-          )}
-        </div>
-      </div>
+      <SessionSideBar
+        projectId={projectId}
+        chatSessions={sessionManager.chatSessions}
+        currentSessionId={sessionManager.currentSessionId}
+        setCurrentSessionId={sessionManager.setCurrentSessionId}
+        isLoading={sessionManager.isLoading}
+      />
 
       {/* Main Chat Area */}
       <div className="flex flex-1 flex-col">
