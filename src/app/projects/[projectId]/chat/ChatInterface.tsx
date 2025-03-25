@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { useChat } from "@ai-sdk/react";
+import { useRef, useEffect, useState } from "react";
+import { Message, useChat } from "@ai-sdk/react";
 import { type IProject } from "@/server/models/project";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -9,26 +9,59 @@ import { Markdown } from "@/components/markdown";
 
 export default function ChatInterface({ project }: { project: IProject }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const projectId = project._id.toString();
+
+  // Load saved messages from localStorage on component mount
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+
+  // Get stored messages from localStorage
+  useEffect(() => {
+    try {
+      const storedMessages = localStorage.getItem(`chat-${projectId}`);
+      if (storedMessages) {
+        const parsedMessages: Message[] = JSON.parse(
+          storedMessages,
+        ) as Message[];
+        // Only set the initialMessages if we have stored messages
+        if (parsedMessages && parsedMessages.length > 0) {
+          setStoredMessages(parsedMessages);
+        }
+      }
+      setInitialLoadDone(true);
+    } catch (error) {
+      console.error("Failed to load stored messages:", error);
+      setInitialLoadDone(true);
+    }
+  }, [projectId]);
+
+  // Initial welcome message as default
+  const [storedMessages, setStoredMessages] = useState<Message[]>([
+    {
+      id: "welcome",
+      role: "assistant",
+      content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
+    },
+  ]);
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    initialMessages: [
-      {
-        id: "welcome",
-        role: "assistant",
-        content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
-      },
-    ],
+    initialMessages: storedMessages,
     body: {
-      projectId: project._id.toString(),
+      projectId: projectId,
     },
+    id: `chat-${projectId}`,
   });
+
+  // Save messages to localStorage
+  useEffect(() => {
+    if (initialLoadDone && messages.length > 0) {
+      localStorage.setItem(`chat-${projectId}`, JSON.stringify(messages));
+    }
+  }, [messages, projectId, initialLoadDone]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  console.log(status);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
@@ -38,12 +71,25 @@ export default function ChatInterface({ project }: { project: IProject }) {
             {project.projectName} - Chat
           </h1>
         </div>
-        <Link
-          href={`/projects/${project._id.toString()}`}
-          className="rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted/80"
-        >
-          Back to Project
-        </Link>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              if (confirm("Are you sure you want to clear the chat history?")) {
+                localStorage.removeItem(`chat-${projectId}`);
+                window.location.reload();
+              }
+            }}
+            className="rounded-md bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/20"
+          >
+            Clear History
+          </button>
+          <Link
+            href={`/projects/${projectId}`}
+            className="rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted/80"
+          >
+            Back to Project
+          </Link>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
@@ -66,6 +112,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
             </div>
           ))}
 
+          {/* Loader */}
           {status === "submitted" && (
             <span className="flex items-center gap-2">
               <svg
@@ -114,7 +161,35 @@ export default function ChatInterface({ project }: { project: IProject }) {
                 "cursor-not-allowed opacity-50",
             )}
           >
-            {status === "ready" ? "Send" : "Thinking..."}
+            {status === "ready" ? (
+              "Send"
+            ) : status === "submitted" ? (
+              <span className="flex items-center gap-2">
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Submitting...
+              </span>
+            ) : (
+              "Thinking..."
+            )}
           </button>
         </form>
       </div>
