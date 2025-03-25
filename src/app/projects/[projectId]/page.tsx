@@ -1,7 +1,7 @@
 import { notFound, unauthorized } from "next/navigation";
 import { auth } from "@/server/auth";
 import { getProjectById } from "@/server/actions/projects";
-import ProjectInfo from "./project-info";
+import ProjectInfo from "./ProjectInfo";
 
 export default async function ProjectDetailsPage({
   params,

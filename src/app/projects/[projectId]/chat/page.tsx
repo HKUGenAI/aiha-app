@@ -1,7 +1,7 @@
 import { auth } from "@/server/auth";
 import { getProjectById } from "@/server/actions/projects";
 import { notFound, unauthorized } from "next/navigation";
-import ChatInterface from "./chat-interface";
+import ChatInterface from "./ChatInterface";
 
 export default async function ProjectChatPage({
   params,
