@@ -88,9 +88,10 @@ export default function ChatInterface({ project }: { project: IProject }) {
     id: `chat-${projectId}-${currentSessionId}`,
   });
 
+  console.log(messages);
   // Save messages to localStorage
   useEffect(() => {
-    if (initialLoadDone && messages.length > 0) {
+    if (messages.length > 0) {
       // Save messages to localStorage
       localStorage.setItem(
         `chat-${projectId}-${currentSessionId}`,
@@ -118,7 +119,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
         return updatedSessions;
       });
     }
-  }, []);
+  }, [messages]);
 
   // Auto-scroll to bottom when messages change
   // useEffect(() => {
@@ -162,6 +163,8 @@ export default function ChatInterface({ project }: { project: IProject }) {
       window.location.reload();
     }
   };
+
+  console.log(status);
 
   return (
     <div className="flex h-[calc(100vh-4rem)]">
@@ -291,7 +294,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
                   "cursor-not-allowed opacity-50",
               )}
             >
-              {status === "ready" ? "Send" : "Thinking..."}
+              Send
             </button>
           </form>
         </div>
