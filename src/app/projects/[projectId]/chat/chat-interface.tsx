@@ -114,7 +114,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
                 "cursor-not-allowed opacity-50",
             )}
           >
-            {status === "streaming" ? "Thinking..." : "Send"}
+            {status === "ready" ? "Send" : "Thinking..."}
           </button>
         </form>
       </div>
