@@ -11,7 +11,8 @@ export default async function ProjectLayout({
   params: { projectId: string };
 }) {
   const session = await auth();
-  const project = await getProjectById(params.projectId);
+  const { projectId } = await params;
+  const project = await getProjectById(projectId);
 
   if (!project) {
     notFound();
@@ -20,11 +21,9 @@ export default async function ProjectLayout({
   return (
     <div className="flex w-full justify-between">
       <div className="w-56 flex-shrink-0">
-      <ProjectSidebar projectId={params.projectId} />
+        <ProjectSidebar projectId={projectId} />
       </div>
-      <div className="flex-1 ml-4">
-      {children}
-      </div>
+      <div className="ml-4 flex-1">{children}</div>
     </div>
   );
 }

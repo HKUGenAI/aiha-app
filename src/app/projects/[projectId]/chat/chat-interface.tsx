@@ -28,6 +28,8 @@ export default function ChatInterface({ project }: { project: IProject }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  console.log(status)
+
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
       <div className="flex items-center justify-between border-b border-border p-4">
