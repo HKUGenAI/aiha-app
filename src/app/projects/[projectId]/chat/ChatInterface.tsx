@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/markdown";
 import { PlusCircle } from "lucide-react";
+import { set } from "mongoose";
 
 // Define the structure of a chat session
 interface ChatSession {
@@ -23,20 +24,11 @@ export default function ChatInterface({ project }: { project: IProject }) {
   // Track current active chat session
   const [currentSessionId, setCurrentSessionId] = useState<string>("default");
   // Store all available chat sessions
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([
-    {
-      id: "default",
-      title: "New Chat",
-      lastUpdated: Date.now(),
-      messageCount: 1,
-    },
-  ]);
-
-  // Load saved messages from localStorage on component mount
-  const [initialLoadDone, setInitialLoadDone] = useState(false);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
 
   // Get stored messages and sessions from localStorage
   useEffect(() => {
+    console.log(`useEffect[Loading Sessions & Chatting History]`);
     try {
       // Load sessions
       const storedSessions = localStorage.getItem(`chat-sessions-${projectId}`);
@@ -52,6 +44,18 @@ export default function ChatInterface({ project }: { project: IProject }) {
         }
       }
 
+      if (!storedSessions || storedSessions.length === 0 || !currentSessionId) {
+        setCurrentSessionId("default");
+        setChatSessions([
+          {
+            id: "default",
+            title: "Default Chat",
+            lastUpdated: Date.now(),
+            messageCount: 0,
+          },
+        ]);
+      }
+
       // Load messages for current session
       const storedMessages = localStorage.getItem(
         `chat-${projectId}-${currentSessionId}`,
@@ -64,10 +68,8 @@ export default function ChatInterface({ project }: { project: IProject }) {
           setStoredMessages(parsedMessages);
         }
       }
-      setInitialLoadDone(true);
     } catch (error) {
       console.error("Failed to load stored sessions or messages:", error);
-      setInitialLoadDone(true);
     }
   }, [projectId]);
 
@@ -88,7 +90,6 @@ export default function ChatInterface({ project }: { project: IProject }) {
     id: `chat-${projectId}-${currentSessionId}`,
   });
 
-  console.log(messages);
   // Save messages to localStorage
   useEffect(() => {
     if (messages.length > 0) {
@@ -121,11 +122,6 @@ export default function ChatInterface({ project }: { project: IProject }) {
     }
   }, [messages]);
 
-  // Auto-scroll to bottom when messages change
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
-
   // Create a new chat session
   const createNewSession = () => {
     const newSessionId = `session-${Date.now()}`;
@@ -156,16 +152,6 @@ export default function ChatInterface({ project }: { project: IProject }) {
     ]);
   };
 
-  // Clear the current chat session
-  const clearCurrentSession = () => {
-    if (confirm("Are you sure you want to clear this chat history?")) {
-      localStorage.removeItem(`chat-${projectId}-${currentSessionId}`);
-      window.location.reload();
-    }
-  };
-
-  console.log(status);
-
   return (
     <div className="flex h-[calc(100vh-4rem)]">
       {/* Chat Sessions Sidebar */}
@@ -180,22 +166,28 @@ export default function ChatInterface({ project }: { project: IProject }) {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto">
-          {chatSessions.map((session) => (
-            <button
-              key={session.id}
-              onClick={() => setCurrentSessionId(session.id)}
-              className={cn(
-                "w-full border-b border-border/50 px-4 py-3 text-left transition-colors hover:bg-muted",
-                currentSessionId === session.id && "bg-muted",
-              )}
-            >
-              <div className="truncate font-medium">{session.title}</div>
-              <div className="text-xs text-muted-foreground">
-                {new Date(session.lastUpdated).toLocaleDateString()} ·{" "}
-                {session.messageCount} messages
-              </div>
-            </button>
-          ))}
+          {chatSessions.length > 0 ? (
+            chatSessions.map((session) => (
+              <button
+                key={session.id}
+                onClick={() => setCurrentSessionId(session.id)}
+                className={cn(
+                  "w-full border-b border-border/50 px-4 py-3 text-left transition-colors hover:bg-muted",
+                  currentSessionId === session.id && "bg-muted",
+                )}
+              >
+                <div className="truncate font-medium">{session.title}</div>
+                <div className="text-xs text-muted-foreground">
+                  {new Date(session.lastUpdated).toLocaleDateString()} ·{" "}
+                  {session.messageCount} messages
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              Loading Sessions...
+            </div>
+          )}
         </div>
       </div>
 
@@ -207,20 +199,12 @@ export default function ChatInterface({ project }: { project: IProject }) {
               {project.projectName} - Chat
             </h1>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={clearCurrentSession}
-              className="rounded-md bg-destructive/10 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/20"
-            >
-              Clear History
-            </button>
-            <Link
-              href={`/projects/${projectId}`}
-              className="rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted/80"
-            >
-              Back to Project
-            </Link>
-          </div>
+          <Link
+            href={`/projects/${projectId}`}
+            className="rounded-md bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted/80"
+          >
+            Back to Project
+          </Link>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">
@@ -270,6 +254,40 @@ export default function ChatInterface({ project }: { project: IProject }) {
                 </svg>
                 Thinking...
               </span>
+            )}
+            {/* Error notification */}
+            {status === "error" && (
+              <div className="rounded-md bg-destructive/10 p-4 text-destructive">
+                <div className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div>
+                    <h3 className="text-sm font-medium">Error occurred</h3>
+                    <p className="text-sm">
+                      Something went wrong. Please try again or refresh the
+                      page.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="text-sm font-medium hover:underline"
+                  >
+                    Refresh page
+                  </button>
+                </div>
+              </div>
             )}
             <div ref={messagesEndRef} />
           </div>

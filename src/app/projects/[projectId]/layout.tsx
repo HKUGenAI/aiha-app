@@ -8,10 +8,10 @@ export default async function ProjectLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
   const session = await auth();
-  const { projectId } = params;
+  const { projectId } = await params;
   const project = await getProjectById(projectId);
 
   if (!project) {
