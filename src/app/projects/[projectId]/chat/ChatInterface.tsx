@@ -35,7 +35,6 @@ export default function ChatInterface({ project }: { project: IProject }) {
   // Load saved messages from localStorage on component mount
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  console.log(currentSessionId);
   // Get stored messages and sessions from localStorage
   useEffect(() => {
     try {
@@ -122,9 +121,9 @@ export default function ChatInterface({ project }: { project: IProject }) {
   }, []);
 
   // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
 
   // Create a new chat session
   const createNewSession = () => {
