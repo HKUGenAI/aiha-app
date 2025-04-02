@@ -7,6 +7,7 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/server/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   title: "AIHA",
@@ -26,6 +27,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
+        <Analytics />
         <div className="relative min-h-screen bg-background flex flex-col items-center">
           {/* Navigation Bar */}
           <nav className="h-16 border-b bg-card shadow-sm w-screen">
