@@ -10,6 +10,10 @@ import { Label } from "@/components/ui/label";
 import { GlobeIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 
+interface DataJson {
+  searchQuery: string;
+}
+
 export default function ChatInterface({ project }: { project: IProject }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [webSearch, setWebSearch] = useState(false);
@@ -63,14 +67,13 @@ export default function ChatInterface({ project }: { project: IProject }) {
             <div key={message.id}>
               {data &&
                 data[data.length - 1] &&
-                data[data.length - 1] &&
                 index === messages.length - 1 &&
                 !message.content && (
                   <div className="flex animate-pulse items-center gap-2">
                     <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-primary"></span>
                     Searching for:{" "}
                     {
-                      JSON.parse(JSON.stringify(data[data.length - 1]))
+                      (JSON.parse(JSON.stringify(data[data.length - 1])) as DataJson)
                         .searchQuery
                     }
                   </div>

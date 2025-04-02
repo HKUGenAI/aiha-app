@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { type UIMessage, createDataStreamResponse, streamText } from "ai";
-import { azure } from "@ai-sdk/azure";
+// import { azure } from "@ai-sdk/azure";
 import { createVertex } from "@ai-sdk/google-vertex";
 import { auth } from "@/server/auth";
 import { getProjectById } from "@/server/actions/projects";
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         dataStream.writeData({ searchQuery: searchQuery });
         const chunks = await searchChunks(projectId, searchQuery, TOP_K);
 
-        let contextString = chunks
+        const contextString = chunks
           .map((chunk: SearchChunkResponse) => chunk.content)
           .join("\n\n")
           .replaceAll("${BASE_URL}", process.env.IMAGES_BASE_URL ?? "")
