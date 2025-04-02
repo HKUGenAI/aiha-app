@@ -14,26 +14,27 @@ export default function ChatInterface({ project }: { project: IProject }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [webSearch, setWebSearch] = useState(false);
 
-  const { messages, input, handleInputChange, handleSubmit, status  } = useChat({
-    initialMessages: [
-      {
-        id: "welcome",
-        role: "assistant",
-        content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
+  const { messages, input, handleInputChange, handleSubmit, status, data } =
+    useChat({
+      initialMessages: [
+        {
+          id: "welcome",
+          role: "assistant",
+          content: `Hello! I'm your AI assistant for the "${project.projectName}" project. How can I help you today?`,
+        },
+      ],
+      body: {
+        projectId: project._id.toString(),
+        webSearch,
       },
-    ],
-    body: {
-      projectId: project._id.toString(),
-      webSearch,
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
-    onFinish: (messages) => {
-      console.log("Finished streaming");
-      console.log(messages)
-    },
-  });
+      onError: (error: Error) => {
+        toast.error(error.message);
+      },
+      onFinish: (messages) => {
+        console.log("Finished streaming");
+        console.log(messages);
+      },
+    });
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
   }, [messages]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full w-full flex-col">
       {/* <div className="flex items-center justify-between border-b border-border p-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-semibold text-foreground">
@@ -56,22 +57,39 @@ export default function ChatInterface({ project }: { project: IProject }) {
         </Link>
       </div> */}
 
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="min-w-full flex-1 overflow-y-auto p-4">
         <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                "flex max-w-4xl rounded-lg p-4",
-                message.role === "user" ? "ml-auto bg-primary/10 w-fit" : "bg-muted w-full",
-              )}
-            >
-              <div className="prose dark:prose-invert">
-                {message.role === "user" ? (
-                  <span className="text-foreground">{message.content}</span>
-                ) : (
-                  <Markdown>{message.content}</Markdown>
+          {messages.map((message, index) => (
+            <div key={message.id}>
+              {data &&
+                data[data.length - 1] &&
+                data[data.length - 1] &&
+                index === messages.length - 1 &&
+                !message.content && (
+                  <div className="flex animate-pulse items-center gap-2">
+                    <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-primary"></span>
+                    Searching for:{" "}
+                    {
+                      JSON.parse(JSON.stringify(data[data.length - 1]))
+                        .searchQuery
+                    }
+                  </div>
                 )}
+              <div
+                className={cn(
+                  "flex max-w-4xl rounded-lg p-4",
+                  message.role === "user"
+                    ? "ml-auto w-fit bg-primary/10"
+                    : "w-full bg-muted",
+                )}
+              >
+                <div className="prose dark:prose-invert">
+                  {message.role === "user" ? (
+                    <span className="text-foreground">{message.content}</span>
+                  ) : (
+                    <Markdown>{message.content}</Markdown>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -79,7 +97,7 @@ export default function ChatInterface({ project }: { project: IProject }) {
         </div>
       </div>
 
-      <div className="border-t border-border p-4 pb-0">
+      <div className="border-t border-border pt-2">
         <div className="mb-2 flex items-center justify-end gap-2">
           <GlobeIcon className="h-4 w-4 text-muted-foreground" />
           <Label htmlFor="web-search" className="text-sm text-muted-foreground">
@@ -109,7 +127,11 @@ export default function ChatInterface({ project }: { project: IProject }) {
                 "cursor-not-allowed opacity-50",
             )}
           >
-            {status == "submitted" ? "Sending..." : status == "streaming" ? "Thinking..." : "Send"}
+            {status == "submitted"
+              ? "Sending..."
+              : status == "streaming"
+                ? "Thinking..."
+                : "Send"}
           </button>
         </form>
       </div>

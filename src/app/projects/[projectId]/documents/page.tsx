@@ -25,7 +25,7 @@ export default async function ProjectDocumentsPage({
   const isCollaborator = project.collaborators.includes(session?.user?.id ?? "");
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container p-6">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Project Documents</h1>
         

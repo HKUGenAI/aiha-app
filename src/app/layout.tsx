@@ -26,10 +26,10 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <div className="relative min-h-screen bg-background flex flex-col">
+        <div className="relative min-h-screen bg-background flex flex-col items-center">
           {/* Navigation Bar */}
-          <nav className="h-16 border-b bg-card shadow-sm">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <nav className="h-16 border-b bg-card shadow-sm w-screen">
+            <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex h-16 justify-between">
                 <div className="flex items-center">
                   {/* Logo/Home Link */}
@@ -82,7 +82,7 @@ export default async function RootLayout({
           </nav>
 
           {/* Main Content */}
-          <main className="relative flex min-h-full h-full max-w-7xl flex-grow justify-center px-4 py-6 sm:px-6 lg:px-8 mx-auto">
+          <main className="relative flex min-h-full h-full flex-grow justify-center px-6 py-6 sm:px-6 lg:px-8 min-w-full">
             {children}
           </main>
 

@@ -11,18 +11,19 @@ export default async function ProjectLayout({
   params: { projectId: string };
 }) {
   const session = await auth();
-  const project = await getProjectById(params.projectId);
+  const { projectId } = await params;
+  const project = await getProjectById(projectId);
 
   if (!project) {
     notFound();
   }
 
   return (
-    <div className="flex w-full justify-center min-h-full max-h-[calc(100vh-8rem)]">
-      <div className="w-52 flex-shrink-0">
-        <ProjectSidebar projectId={params.projectId} />
+    <div className="flex w-full min-w-full justify-start min-h-full max-h-[calc(100vh-8rem)]">
+      <div className="w-52 flex-shrink">
+        <ProjectSidebar projectId={projectId} />
       </div>
-      <div className="flex-1 ml-4 min-h-full w-full">
+      <div className="flex-1 ml-4 min-h-full flex-grow w-full">
         {children}
       </div>
     </div>

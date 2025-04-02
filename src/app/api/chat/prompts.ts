@@ -9,7 +9,4 @@ export const systemPrompt = `You are an AI assistant for the {{projectName}} pro
 - You can also search the web for information.
 - Alway answer in markdown format, improve readability by using headings, lists, and bold text. Include images when ever possible in markdown format (Do not use HTML img tag).`;
 
-export const queryRewritePrompt = `You are a search query rewriter. Your goal is to analyze the conversation history and produce a search query that is relevant to the conversation. Must be a single comprehensive sentence.
-
-### Conversation History
-{{conversationHistory}}`;
+export const queryRewritePrompt = `You are a search query rewriter. Your goal is to analyze the conversation history and produce a search query that is relevant to the conversation. Must be a single comprehensive sentence. Output only the search query. If the user query is a few keywords, output the keywords.`;
