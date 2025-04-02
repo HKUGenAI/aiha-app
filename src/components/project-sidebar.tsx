@@ -40,9 +40,9 @@ export default function ProjectSidebar({ projectId }: ProjectSidebarProps) {
   return (
     <div className="h-full">
       <div className="flex h-full flex-col rounded-lg border border-border bg-card p-4 shadow-sm">
-        <div className="mb-4 border-b border-border pb-3">
+        {/* <div className="mb-4 border-b border-border pb-3">
           <h2 className="text-lg font-semibold text-foreground">Project Navigation</h2>
-        </div>
+        </div> */}
         <nav className="flex-1 space-y-2">
           {navigation.map((item) => (
             <Link

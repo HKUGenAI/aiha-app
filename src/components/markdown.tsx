@@ -100,7 +100,7 @@ const components: Partial<Components> = {
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (
-    <div className="leading-relaxed">
+    <div className="leading-relaxed flex flex-col gap-2">
       <ReactMarkdown components={components}>{children}</ReactMarkdown>
     </div>
   );

@@ -18,12 +18,12 @@ export default async function ProjectLayout({
   }
 
   return (
-    <div className="flex w-full justify-between">
-      <div className="w-56 flex-shrink-0">
-      <ProjectSidebar projectId={params.projectId} />
+    <div className="flex w-full justify-center min-h-full max-h-[calc(100vh-8rem)]">
+      <div className="w-52 flex-shrink-0">
+        <ProjectSidebar projectId={params.projectId} />
       </div>
-      <div className="flex-1 ml-4">
-      {children}
+      <div className="flex-1 ml-4 min-h-full w-full">
+        {children}
       </div>
     </div>
   );

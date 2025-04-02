@@ -30,10 +30,10 @@ export async function searchChunks(
   topK: number,
 ): Promise<SearchChunkResponse[]> {
   await mongoosePromise;
-  const verified = await userHasAccessToProject(projectId);
-  if (!verified) {
-    throw new Error("Unauthorized");
-  }
+  // const verified = await userHasAccessToProject(projectId);
+  // if (!verified) {
+  //   throw new Error("Unauthorized");
+  // }
   if (!projectId) {
     throw new Error("Project ID is required");
   }

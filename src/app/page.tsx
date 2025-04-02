@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-full flex-col items-center justify-center px-4 py-20 text-center">
+    <div className="flex min-h-full flex-col items-center justify-center px-4 py-20 text-cente mx-auto">
       <h1 className="mb-4 text-4xl font-bold text-foreground">AIHA</h1>
       <h2 className="mb-6 text-2xl text-foreground">AI Historian Assistant</h2>
 
