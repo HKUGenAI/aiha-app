@@ -22,7 +22,7 @@ if (process.env.HTTP_PROXY && process.env.NODE_ENV !== "test") {
   setGlobalDispatcher(proxyAgent);
 }
 
-export const vertex = createVertex({
+const vertex = createVertex({
   googleAuthOptions: {
     credentials: {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,

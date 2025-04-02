@@ -2,7 +2,7 @@
 
 import { mongoosePromise } from "@/server/db";
 import { Chunk } from "@/server/models/chunk";
-import { userHasAccessToProject } from "./projects";
+// import { userHasAccessToProject } from "./projects";
 
 import { embed } from "ai";
 import { azure } from "@ai-sdk/azure";
