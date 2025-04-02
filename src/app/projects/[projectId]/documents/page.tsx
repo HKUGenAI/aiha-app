@@ -46,7 +46,7 @@ export default async function ProjectDocumentsPage({
             <Link
               href={`/projects/${project._id.toString()}/documents/${doc.documentId}`}
               key={doc.documentId}
-              className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:shadow-md"
+              className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all shadow-sm hover:shadow-md"
             >
               <div className="relative h-48 w-full overflow-hidden bg-muted">
                 {doc.documentThumbnail ? (

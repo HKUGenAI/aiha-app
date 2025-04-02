@@ -90,7 +90,45 @@ export default function ChatInterface({ project }: { project: IProject }) {
                   {message.role === "user" ? (
                     <span className="text-foreground">{message.content}</span>
                   ) : (
-                    <Markdown>{message.content}</Markdown>
+                    message.parts ? (<div className="space-y-2">
+                      {message.parts.map((part, i) => {
+                        switch (part.type) {
+                          case 'text':
+                            return <Markdown key={i}>{part.text}</Markdown>;
+                          case 'source':
+                            return (
+                              <div key={i} className="mt-2 w-min text-sm text-muted-foreground hover:text-foreground">
+                                {part.source.url ? (
+                                  <a
+                                    href={part.source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    <div className="flex gap-1">
+                                      <span className="truncate">Source: {part.source.sourceType}</span>
+                                      {part.source.title && <span className="truncate">• {part.source.title}</span>}
+                                    </div>
+                                  </a>
+                                ) : (
+                                  <div className="flex gap-1">
+                                    <span className="truncate">Source: {part.source.sourceType}</span>
+                                    {part.source.title && <span className="truncate">• {part.source.title}</span>}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          case 'reasoning':
+                          case 'tool-invocation':
+                          case 'file':
+                          case 'step-start':
+                          default:
+                            return null;
+                        }
+                      })}
+                    </div>
+                  ) : (
+                      <Markdown>{message.content}</Markdown>
+                    )
                   )}
                 </div>
               </div>
@@ -119,14 +157,14 @@ export default function ChatInterface({ project }: { project: IProject }) {
             onChange={handleInputChange}
             placeholder="Ask a question about this project..."
             className="flex-1 rounded-md border border-input bg-background px-4 py-2 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            disabled={status !== "ready"}
+            disabled={status !== "ready" && status !== "error"}
           />
           <button
             type="submit"
-            disabled={status !== "ready" || !input.trim()}
+            disabled={status !== "ready" && status !== "error" || !input.trim()}
             className={cn(
               "rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none",
-              (status !== "ready" || !input.trim()) &&
+              (status !== "ready" && status !== "error" || !input.trim()) &&
                 "cursor-not-allowed opacity-50",
             )}
           >
