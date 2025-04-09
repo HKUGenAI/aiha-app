@@ -15,8 +15,9 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { Tiktoken } from "js-tiktoken/lite";
 import o200k_base from "js-tiktoken/ranks/o200k_base";
 
-import { embed } from "ai";
+import { embedMany } from "ai";
 import { azure } from "@ai-sdk/azure";
+import { auth } from "@/server/auth";
 
 // Create the Tiktoken instance once
 const encoding = new Tiktoken(o200k_base);
@@ -64,7 +65,11 @@ export async function PUT(request: NextRequest) {
     // }
 
     // console.log('Fetching MD...');
-
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new Error("Unauthorized");
+    }
+ 
     // Fetch the MD file content
     const mdResponse = await fetch(mdDocUrl);
     if (!mdResponse.ok) {
@@ -89,7 +94,7 @@ export async function PUT(request: NextRequest) {
       const imageUrl = urlMatch?.[1];
       if (imageUrl) {
         const newImageUrl = imageUrl.replace(imagesDir, "${BASE_URL}");
-        mdContent = mdContent.replace(imageUrl, newImageUrl);
+        mdContent = mdContent.replaceAll(imageUrl, newImageUrl);
       }
     }
 
@@ -114,12 +119,20 @@ export async function PUT(request: NextRequest) {
       documentUrl: mdDocUrl,
       createdAt: new Date(),
     };
-    await addDocumentToProject(projectId, newDocument);
+    
     // console.log('Document added to project');
 
     // Add the document ID to each chunk, and store the chunks in the database
-
-    const chunkDocumentsPromises = chunks.map(async (chunk) => ({
+    const chunkContents = chunks.map(chunk => chunk.pageContent);
+    
+    console.log("embedding for ", documentId)
+    const embeddings = await embedMany({
+      model: azure.textEmbeddingModel("text-embedding-3-small"),
+      values: chunkContents,
+    });
+    
+    console.log("embedding complete")
+    const chunkDocumentsPromises = chunks.map((chunk, index) => ({
       documentId,
       projectId,
       content: chunk.pageContent,
@@ -128,16 +141,13 @@ export async function PUT(request: NextRequest) {
         documentId,
         projectId,
       },
-      embedding: (
-        await embed({
-          model: azure.textEmbeddingModel("text-embedding-3-small"),
-          value: chunk.pageContent,
-        })
-      ).embedding as number[],
+      embedding: embeddings.embeddings[index] as number[],
       createdAt: new Date(),
     }));
 
+
     const chunkDocuments = await Promise.all(chunkDocumentsPromises);
+    await addDocumentToProject(projectId, newDocument);
     await addChunksToProject(projectId, documentId, chunkDocuments);
     // console.log('Chunks added to project');
 
