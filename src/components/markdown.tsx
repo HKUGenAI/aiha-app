@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import { CodeBlock } from "./code-block";
 
@@ -94,7 +94,26 @@ const components: Partial<Components> = {
     return <hr className="my-4" {...props} />;
   },
   img: ({ node, ...props }) => {
-    return <img className="max-h-[35rem] max-w-[40rem]" {...props} />;
+    const [showOverlay, setShowOverlay] = useState(false);
+    
+    return (
+      <span className="relative inline-block group">
+        <img className="max-h-[22rem] max-w-[27rem]" {...props} />
+        <button 
+          className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={() => setShowOverlay(true)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          </svg>
+        </button>
+        {showOverlay && (
+          <span className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setShowOverlay(false)}>
+            <img className="max-h-[90vh] max-w-[90vw] object-contain" src={props.src} alt={props.alt} />
+          </span>
+        )}
+      </span>
+    );
   },
 };
 
