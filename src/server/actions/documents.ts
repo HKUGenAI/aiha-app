@@ -1,9 +1,37 @@
 "use server";
 
 import { mongoosePromise } from "@/server/db";
+import { notFound, unauthorized } from "next/navigation";
 import { Project, type Document } from "@/server/models/project";
 import { Chunk, type ChunkType } from "@/server/models/chunk";
 import { auth } from "@/server/auth";
+
+export async function getDocumentById(documentId: string, projectId: string) {
+  await mongoosePromise;
+  const project = await Project.findById(projectId);
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  if (!project.isPublic) {
+    const session = await auth();
+    if (!session?.user?.id || session.user.id !== project.ownerId || !project.collaborators.includes(session.user.id)) {
+      unauthorized();
+    }
+  }
+
+  const document = project.documents.find(
+    (doc) => doc.documentId === documentId,
+  );
+
+  if (!document) {
+    notFound()
+    throw new Error("Document not found");
+  }
+
+  return document;
+}
 
 export async function addDocumentToProject(
   projectId: string,

@@ -1,6 +1,6 @@
 import { queryRewritePrompt} from "./prompts";
 import { type UIMessage, generateText } from "ai";
-import { LanguageModelV1 } from "ai";
+import type { LanguageModelV1 } from "ai";
 
 
 export async function generateSearchQuery(messages: UIMessage[], model: LanguageModelV1) {

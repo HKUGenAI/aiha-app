@@ -1,4 +1,4 @@
-import { auth } from "@/server/auth";
+// import { auth } from "@/server/auth";
 import { getProjectById } from "@/server/actions/projects";
 import { notFound } from "next/navigation";
 import ProjectSidebar from "../../../components/project-sidebar";
@@ -10,7 +10,6 @@ export default async function ProjectLayout({
   children: React.ReactNode;
   params: Promise<{ projectId: string }>;
 }) {
-  const session = await auth();
   const { projectId } = await params;
   const project = await getProjectById(projectId);
 
