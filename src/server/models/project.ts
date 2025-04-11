@@ -24,11 +24,12 @@ export interface Document {
   documentTitle: string;
   documentType: DocumentTypes;
   documentThumbnail?: string;
-  documentUrl?: string;
+  documentMdUrl?: string;
+  documentSourceUrl?: string;
   createdAt: Date;
 }
 
-const documentSchema = new mongoose.Schema({
+const documentSchema = new mongoose.Schema<Document>({
   documentId: {
     type: String,
     required: true,
@@ -43,7 +44,8 @@ const documentSchema = new mongoose.Schema({
     required: true,
   },
   documentThumbnail: String,
-  documentUrl: String,
+  documentMdUrl: String,
+  documentSourceUrl: String,
   createdAt: {
     type: Date,
     default: Date.now,

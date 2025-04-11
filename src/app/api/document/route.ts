@@ -32,11 +32,12 @@ interface DocumentRequest {
   projectId: string;
   docName: string;
   docType: DocumentTypes;
+  sourceDocUrl: string;
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const { containerName, imagesDir, mdDocUrl, projectId, docName, docType } =
+    const { containerName, imagesDir, mdDocUrl, projectId, docName, docType, sourceDocUrl} =
       (await request.json()) as DocumentRequest;
 
     if (!containerName) {
@@ -67,8 +68,9 @@ export async function PUT(request: NextRequest) {
     // console.log('Fetching MD...');
     const session = await auth();
     if (!session?.user?.id) {
-      throw new Error("Unauthorized");
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
+
  
     // Fetch the MD file content
     const mdResponse = await fetch(mdDocUrl);
@@ -85,16 +87,20 @@ export async function PUT(request: NextRequest) {
     const destinationContainerName = "images";
     await moveBlobs(sourceContainerName, imagesDir, destinationContainerName);
 
+    let thumbnail = undefined;
+
     const imageRegex = /!\[.*?\]\((.*?)\)/g;
     let match;
     while ((match = imageRegex.exec(mdContent)) !== null) {
-      const fullMatch = match[0];
-      const urlRegex = /\((.*?)\)/;
-      const urlMatch = urlRegex.exec(fullMatch);
-      const imageUrl = urlMatch?.[1];
+      // const fullMatch = match[0];
+      const imageUrl = match[1];
+      if (!thumbnail) {
+        thumbnail = imageUrl;
+      }
+
       if (imageUrl) {
         const newImageUrl = imageUrl.replace(imagesDir, "${BASE_URL}");
-        mdContent = mdContent.replaceAll(imageUrl, newImageUrl);
+        mdContent = mdContent.replace(imageUrl, newImageUrl);
       }
     }
 
@@ -116,7 +122,9 @@ export async function PUT(request: NextRequest) {
       documentId: documentId,
       documentTitle: docName,
       documentType: docType,
-      documentUrl: mdDocUrl,
+      documentThumbnail: thumbnail,
+      documentMdUrl: mdDocUrl,
+      documentSourceUrl: sourceDocUrl,
       createdAt: new Date(),
     };
     
