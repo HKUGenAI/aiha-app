@@ -119,8 +119,6 @@ export default function ChatInterface({ project }: { project: IProject }) {
                             );
                           case 'reasoning':
                           case 'tool-invocation':
-                          case 'file':
-                          case 'step-start':
                           default:
                             return null;
                         }
